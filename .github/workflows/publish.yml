@@ -1,6 +1,7 @@
 name: Publish
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
   push:
@@ -19,9 +20,10 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: 24
           registry-url: https://registry.npmjs.org
+      - run: node --version
+      - run: npm --version
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
@@ -31,4 +33,4 @@ jobs:
       # Configure npm Trusted Publishing for @roleplay-sh/cli in npm package settings.
       # This workflow intentionally does not use or require an npm token.
       # Trusted Publishing automatically creates npm provenance attestations.
-      - run: pnpm publish --access public --no-git-checks
+      - run: npm publish --access public
