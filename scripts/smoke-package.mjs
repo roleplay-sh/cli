@@ -93,10 +93,10 @@ try {
     'utf8',
   );
   for (const expected of [
-    'ROLEPLAY_CLOUD_URL=http://127.0.0.1:3000',
-    'ROLEPLAY_PROJECT_ID=proj_support',
+    'ROLEPLAY_CLOUD_URL=https://app.roleplay.sh',
+    'ROLEPLAY_PROJECT_ID=',
     'ROLEPLAY_API_KEY=',
-    'ROLEPLAY_AGENT_NAME=support-agent-staging',
+    'ROLEPLAY_AGENT_NAME=',
     'ROLEPLAY_TARGET_URL=http://localhost:3000/agent',
     'ROLEPLAY_TARGET_COMMAND=',
   ]) {
@@ -115,7 +115,7 @@ try {
   }
   const json = run(
     process.execPath,
-    [cli, 'run', '.roleplay/scenarios/support-happy-path.yml', '--provider', 'mock', '--judge', 'mock', '--json'],
+    [cli, 'run', '.roleplay/scenarios/support-happy-path.yml', '--json'],
     { cwd: installDir },
   );
   const result = JSON.parse(json);

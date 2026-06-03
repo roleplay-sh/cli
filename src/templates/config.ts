@@ -5,6 +5,5 @@ export function defaultConfig() {
     scenariosDir: '.roleplay/scenarios',
     defaultProvider: 'mock',
     defaultJudge: 'mock',
-    defaultModel: 'gpt-4.1-mini',
   };
 }

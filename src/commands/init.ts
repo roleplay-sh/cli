@@ -7,10 +7,7 @@ import { defaultConfig } from '../templates/config.js';
 import { scenarioTemplates } from '../templates/scenarios.js';
 import { ensureDir, pathExists, writeJson } from '../utils/fs.js';
 
-const envExample = `# OpenAI is only required when using --provider openai or --judge openai.
-OPENAI_API_KEY=
-
-# Optional agent credentials used by your own HTTP/CLI target.
+const envExample = `# Optional agent credentials used by your own HTTP/CLI target.
 AGENT_API_KEY=
 
 # Team Cloud upload settings.
@@ -51,7 +48,7 @@ export class InitCommand extends BaseCommand {
       this.log(
         JSON.stringify({
           created: ['.roleplay/config.json', '.roleplay/scenarios', '.roleplay/runs'],
-          next: 'roleplay run .roleplay/scenarios/refund-policy-edge-case.yml --provider mock --judge mock',
+          next: 'roleplay run .roleplay/scenarios/refund-policy-edge-case.yml',
         }),
       );
       return;
@@ -60,7 +57,7 @@ export class InitCommand extends BaseCommand {
     this.log(`${chalk.cyan('roleplay.sh')} initialized.`);
     this.log(chalk.gray('Created .roleplay/config.json, scenarios, and runs directory.'));
     this.log('\nNext steps:');
-    this.log('  roleplay run .roleplay/scenarios/refund-policy-edge-case.yml --provider mock --judge mock');
+    this.log('  roleplay run .roleplay/scenarios/refund-policy-edge-case.yml');
     this.log('  roleplay report latest');
   }
 }

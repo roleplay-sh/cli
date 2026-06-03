@@ -73,7 +73,7 @@ judge:
           method: 'tools/call',
           params: {
             name: 'run_scenario',
-            arguments: { scenario: scenarioPath, provider: 'mock', judge: 'mock', out: runsDir },
+            arguments: { scenario: scenarioPath, out: runsDir },
           },
         }),
       ].join(''),

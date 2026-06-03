@@ -2,7 +2,7 @@ import type { Report } from '../schemas/report.schema.js';
 import { loadScenarioFile, type Scenario } from '../schemas/scenario.schema.js';
 import type { Transcript } from '../schemas/transcript.schema.js';
 import { createJudge } from '../providers/judge/index.js';
-import { createLlmProvider } from '../providers/llm/index.js';
+import { createUserSimulator } from '../providers/user-simulator/index.js';
 import { createTargetAgent } from '../targets/index.js';
 import { createRunPaths, resolveScenarioPath, saveRun, type RunPaths } from './run-store.js';
 import { addTurn, createTranscript, finishTranscript } from './transcript.js';
@@ -11,9 +11,6 @@ import { toAppError } from './errors.js';
 
 export interface RunOptions {
   scenarioRef: string;
-  provider: 'openai' | 'mock';
-  judge: 'openai' | 'mock';
-  model?: string;
   maxTurns?: number;
   outDir?: string;
   yes?: boolean;
@@ -34,17 +31,16 @@ export async function runScenario(options: RunOptions): Promise<RunResult> {
   const maxTurns = options.maxTurns ?? scenario.simulation.maxTurns;
   const paths = await createRunPaths(options.outDir);
   const transcript = createTranscript(paths.runId, scenario.name);
-  const llm = createLlmProvider(options.provider, options.model);
+  const userSimulator = createUserSimulator();
   const target = createTargetAgent(scenario.target, { allowCliExecution: options.yes });
-  const judge = createJudge(options.judge, options.model ?? scenario.judge.model);
+  const judge = createJudge(scenario.judge.type);
 
   try {
     for (let turn = 1; turn <= maxTurns; turn += 1) {
-      const user = await llm.generate({
+      const user = await userSimulator.generate({
         scenario,
         transcript,
         turn,
-        model: options.model,
         temperature: scenario.simulation.temperature,
         purpose: 'roleplayed-user',
       });
@@ -62,7 +58,7 @@ export async function runScenario(options: RunOptions): Promise<RunResult> {
     }
 
     finishTranscript(transcript);
-    const report = await judge.judge({ runId: paths.runId, scenario, transcript, model: options.model });
+    const report = await judge.judge({ runId: paths.runId, scenario, transcript });
     const markdown = generateMarkdownReport(report, transcript);
     await saveRun({ scenario, transcript, report, markdown, paths, metadata: options.metadata });
 
@@ -85,7 +81,7 @@ export async function runScenario(options: RunOptions): Promise<RunResult> {
         },
       ],
       recommendations: [
-        appError.suggestion ?? 'Inspect the saved transcript and target/provider configuration.',
+        appError.suggestion ?? 'Inspect the saved transcript and target configuration.',
       ],
       startedAt: transcript.startedAt,
       endedAt: transcript.endedAt ?? new Date().toISOString(),

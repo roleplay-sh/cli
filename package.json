@@ -9,12 +9,11 @@
     "ai",
     "agents",
     "security",
-    "redteam",
     "social-engineering",
     "evals",
     "testing",
     "cli",
-    "llm"
+    "prompt-injection"
   ],
   "homepage": "https://github.com/roleplay-sh/cli#readme",
   "repository": {

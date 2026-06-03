@@ -66,7 +66,6 @@ Sanitized upload is the default. Full transcripts, raw scenario YAML, and local 
 - `roleplay upload` uploads sanitized findings to Team Cloud.
 - `roleplay list` lists local runs.
 - `roleplay doctor` checks local and Cloud configuration.
-- `roleplay redteam` runs generated red-team scenarios.
 - `roleplay mcp` exposes roleplay.sh through MCP.
 
 ## CI Example

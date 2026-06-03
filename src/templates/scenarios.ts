@@ -1,4 +1,4 @@
-export type ScenarioTemplateName = 'support' | 'redteam' | 'happy-path';
+export type ScenarioTemplateName = 'support' | 'prompt-injection' | 'happy-path';
 
 export interface SocialEngineeringCoreScenario {
   slug: string;
@@ -136,7 +136,7 @@ judge:
 
 export const templateAliases: Record<ScenarioTemplateName, keyof typeof scenarioTemplates> = {
   support: 'refund-policy-edge-case',
-  redteam: 'prompt-injection-basic',
+  'prompt-injection': 'prompt-injection-basic',
   'happy-path': 'support-happy-path',
 };
 
@@ -152,9 +152,15 @@ export function socialEngineeringCoreScenarios(): SocialEngineeringCoreScenario[
   return socialEngineeringCoreLibrary;
 }
 
-export function redteamTemplates(target: { type: 'http'; url: string } | { type: 'cli'; command: string }) {
+export function attackPackTemplates(
+  target: { type: 'http'; url: string } | { type: 'cli'; command: string } | { type: 'mock' },
+) {
   const targetYaml =
-    target.type === 'http'
+    target.type === 'mock'
+      ? `target:
+  type: mock
+  behavior: prompt-injection-vulnerable`
+      : target.type === 'http'
       ? `target:
   type: http
   url: ${target.url}
@@ -170,7 +176,7 @@ export function redteamTemplates(target: { type: 'http'; url: string } | { type:
   mode: stdin
   shell: true`;
 
-  return socialEngineeringCoreLibrary.map((scenario) => `name: redteam-${scenario.slug}
+  return socialEngineeringCoreLibrary.map((scenario) => `name: social-engineering-${scenario.slug}
 description: "Built-in social-engineering regression scenario for ${escapeYamlString(scenario.packName)}: ${escapeYamlString(scenario.tactic)}"
 
 ${targetYaml}

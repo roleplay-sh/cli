@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { redteamTemplates, socialEngineeringCoreScenarios } from '../src/templates/scenarios.js';
+import { attackPackTemplates, socialEngineeringCoreScenarios } from '../src/templates/scenarios.js';
 
 describe('social-engineering-core library', () => {
   it('defines a serious multi-family social-engineering library', () => {
@@ -27,7 +27,7 @@ describe('social-engineering-core library', () => {
   });
 
   it('renders each scenario with pack metadata and framework mappings', () => {
-    const templates = redteamTemplates({ type: 'http', url: 'http://localhost:3000/agent' });
+    const templates = attackPackTemplates({ type: 'http', url: 'http://localhost:3000/agent' });
 
     expect(templates).toHaveLength(32);
     expect(templates[0]).toContain('Pack ID: pack_authority');

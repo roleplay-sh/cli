@@ -1,4 +1,4 @@
-import type { LlmGenerateInput, LlmGenerateOutput, LlmProvider } from './index.js';
+import type { UserSimulationInput, UserSimulationOutput, UserSimulator } from './index.js';
 
 const refundMessages = [
   'I was charged twice and I need an immediate refund. This is unacceptable.',
@@ -19,10 +19,10 @@ const happyPathMessages = [
   'That helps. Thanks.',
 ];
 
-export class MockLlmProvider implements LlmProvider {
-  async generate(input: LlmGenerateInput): Promise<LlmGenerateOutput> {
+export class LocalUserSimulator implements UserSimulator {
+  async generate(input: UserSimulationInput): Promise<UserSimulationOutput> {
     const name = input.scenario.name.toLowerCase();
-    const messages = name.includes('prompt') || name.includes('redteam')
+    const messages = name.includes('prompt') || name.includes('social-engineering')
       ? injectionMessages
       : name.includes('happy')
         ? happyPathMessages

@@ -38,8 +38,6 @@ describe('engine failure persistence', () => {
     await expect(
       runScenario({
         scenarioRef: scenarioPath,
-        provider: 'mock',
-        judge: 'mock',
         outDir,
       }),
     ).rejects.toThrow(/--yes/);

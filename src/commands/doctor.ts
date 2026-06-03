@@ -25,7 +25,6 @@ interface CloudHealthResponse {
 export class DoctorCommand extends BaseCommand {
   static description = 'Check local roleplay.sh setup.';
   static flags = {
-    provider: Flags.string({ options: ['openai', 'mock'], default: 'mock' }),
     json: Flags.boolean({ description: 'Output JSON only.' }),
     cloud: Flags.boolean({ description: 'Check Team Cloud connectivity through /api/health.' }),
     'cloud-url': Flags.string({
@@ -49,7 +48,6 @@ export class DoctorCommand extends BaseCommand {
       { name: '.roleplay exists', ok: await pathExists('.roleplay') },
       { name: '.roleplay/scenarios exists', ok: await pathExists('.roleplay/scenarios') },
       { name: '.roleplay/runs writable', ok: await writable('.roleplay/runs') },
-      { name: 'OPENAI_API_KEY', ok: flags.provider !== 'openai' || Boolean(process.env.OPENAI_API_KEY) },
     ];
 
     if (flags.cloud) {

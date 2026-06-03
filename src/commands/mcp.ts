@@ -56,9 +56,6 @@ const tools = [
       required: ['scenario'],
       properties: {
         scenario: { type: 'string', description: 'Scenario path, name, or run-store scenario reference.' },
-        provider: { type: 'string', enum: ['mock', 'openai'], default: 'mock' },
-        judge: { type: 'string', enum: ['mock', 'openai'], default: 'mock' },
-        model: { type: 'string' },
         maxTurns: { type: 'number' },
         out: { type: 'string', description: 'Runs directory. Defaults to .roleplay/runs.' },
         yes: { type: 'boolean', description: 'Allow CLI target execution when the scenario uses a CLI target.' },
@@ -139,9 +136,6 @@ async function callTool(params: unknown) {
   if (name === 'run_scenario') {
     const result = await runScenario({
       scenarioRef: requireString(args.scenario, 'scenario'),
-      provider: providerName(args.provider),
-      judge: judgeName(args.judge),
-      model: optionalString(args.model),
       maxTurns: optionalNumber(args.maxTurns),
       outDir: optionalString(args.out),
       yes: optionalBoolean(args.yes),
@@ -206,18 +200,6 @@ function toolJson(value: JsonValue) {
       },
     ],
   };
-}
-
-function providerName(value: unknown): 'mock' | 'openai' {
-  if (value === undefined) return 'mock';
-  if (value === 'mock' || value === 'openai') return value;
-  throw new Error('provider must be mock or openai');
-}
-
-function judgeName(value: unknown): 'mock' | 'openai' {
-  if (value === undefined) return 'mock';
-  if (value === 'mock' || value === 'openai') return value;
-  throw new Error('judge must be mock or openai');
 }
 
 function requireRecord(value: unknown, field: string): Record<string, unknown> {

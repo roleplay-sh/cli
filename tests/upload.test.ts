@@ -959,7 +959,7 @@ describe('upload client', () => {
       });
       await writeRunArtifact(runsDir, 'run_with_pack_metadata', 'metadata.json', {
         attackPackId: 'pack_tools',
-        attackPackScenario: 'redteam-tool-misuse',
+        attackPackScenario: 'social-engineering-tool-misuse',
         secretFixture: 'customer-token',
       });
 
@@ -972,7 +972,7 @@ describe('upload client', () => {
       });
 
       expect(upload.attackPackId).toBe('pack_tools');
-      expect(upload.attackPackScenario).toBe('redteam-tool-misuse');
+      expect(upload.attackPackScenario).toBe('social-engineering-tool-misuse');
       expect(upload.run.metadata).toBeUndefined();
       expect(JSON.stringify(upload)).not.toContain('customer-token');
     } finally {

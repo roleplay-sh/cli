@@ -7,7 +7,7 @@ import { shouldFail } from '../core/scoring.js';
 import { terminalSummary } from '../core/reporter.js';
 import { createSpinner } from '../utils/output.js';
 import { ensureDir } from '../utils/fs.js';
-import { redteamTemplates } from '../templates/scenarios.js';
+import { attackPackTemplates } from '../templates/scenarios.js';
 import { AppError } from '../core/errors.js';
 import { BaseCommand } from './base.js';
 
@@ -20,16 +20,13 @@ export class RunCommand extends BaseCommand {
   };
   static flags = {
     target: Flags.string({
-      description: 'HTTP target URL for built-in attack packs. Defaults to ROLEPLAY_TARGET_URL.',
+      description: 'HTTP target URL, or "mock" for local smoke tests. Defaults to ROLEPLAY_TARGET_URL.',
       default: process.env.ROLEPLAY_TARGET_URL,
     }),
     'target-command': Flags.string({
       description: 'CLI target command for built-in attack packs. Defaults to ROLEPLAY_TARGET_COMMAND.',
       default: process.env.ROLEPLAY_TARGET_COMMAND,
     }),
-    provider: Flags.string({ options: ['openai', 'mock'], default: 'mock' }),
-    judge: Flags.string({ options: ['openai', 'mock'], default: 'mock' }),
-    model: Flags.string({ default: 'gpt-4.1-mini' }),
     'max-turns': Flags.integer(),
     json: Flags.boolean({ description: 'Output JSON only.' }),
     out: Flags.string({ default: '.roleplay/runs' }),
@@ -58,9 +55,6 @@ export class RunCommand extends BaseCommand {
     try {
       result = await runScenario({
         scenarioRef: args.scenario,
-        provider: flags.provider as 'openai' | 'mock',
-        judge: flags.judge as 'openai' | 'mock',
-        model: flags.model,
         maxTurns: flags['max-turns'],
         outDir: flags.out,
         yes: flags.yes,
@@ -93,16 +87,13 @@ export class RunCommand extends BaseCommand {
     }
 
     if (shouldFail(result.report.status, result.report.failures, flags['fail-on'] as any)) {
-      this.exit(1);
+      process.exitCode = 1;
     }
   }
 
   private async runSocialEngineeringCore(flags: {
     target?: string;
     'target-command'?: string;
-    provider: string;
-    judge: string;
-    model: string;
     'max-turns'?: number;
     json?: boolean;
     out: string;
@@ -119,7 +110,9 @@ export class RunCommand extends BaseCommand {
       });
     }
 
-    const target = flags.target
+    const target = flags.target === 'mock'
+      ? ({ type: 'mock' } as const)
+      : flags.target
       ? ({ type: 'http', url: flags.target } as const)
       : ({ type: 'cli', command: flags['target-command'] as string } as const);
     const scenarioDir = await fs.mkdtemp(join(tmpdir(), 'roleplay-social-engineering-core-'));
@@ -128,7 +121,7 @@ export class RunCommand extends BaseCommand {
 
     try {
       const files: string[] = [];
-      for (const content of redteamTemplates(target)) {
+      for (const content of attackPackTemplates(target)) {
         const name = content.match(/^name:\s*(.+)$/m)?.[1] ?? `social-engineering-${files.length + 1}`;
         const path = join(scenarioDir, `${name}.yml`);
         await fs.writeFile(path, content, 'utf8');
@@ -139,9 +132,6 @@ export class RunCommand extends BaseCommand {
       for (const file of files) {
         const result = await runScenario({
           scenarioRef: file,
-          provider: flags.provider as 'openai' | 'mock',
-          judge: flags.judge as 'openai' | 'mock',
-          model: flags.model,
           maxTurns: flags['max-turns'],
           outDir: flags.out,
           yes: flags.yes,
@@ -184,7 +174,7 @@ export class RunCommand extends BaseCommand {
         );
       }
 
-      if (failed.length) this.exit(1);
+      if (failed.length) process.exitCode = 1;
     } catch (error) {
       spinner?.fail('Attack pack failed');
       throw error;

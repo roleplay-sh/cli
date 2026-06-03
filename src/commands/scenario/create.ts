@@ -6,7 +6,7 @@ import { ensureDir, pathExists } from '../../utils/fs.js';
 import { namedTemplate, type ScenarioTemplateName } from '../../templates/scenarios.js';
 import { AppError } from '../../core/errors.js';
 
-const templates = ['support', 'redteam', 'happy-path'] as const;
+const templates = ['support', 'prompt-injection', 'happy-path'] as const;
 
 export class ScenarioCreateCommand extends BaseCommand {
   static description = 'Create a scenario from a built-in template.';

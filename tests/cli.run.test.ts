@@ -127,7 +127,7 @@ successCriteria:
           'pack_memory_context',
         ]),
       );
-      expect(metadata.every((item) => item.attackPackScenario.startsWith('redteam-'))).toBe(true);
+      expect(metadata.every((item) => item.attackPackScenario.startsWith('social-engineering-'))).toBe(true);
     } finally {
       server.close();
     }
@@ -187,30 +187,23 @@ successCriteria:
     expect(JSON.parse(result.stderr).error.code).toBe('ATTACK_PACK_TARGET_REQUIRED');
   });
 
-  it('requires exactly one redteam target', async () => {
-    const missing = await execa('corepack', ['pnpm', 'tsx', cli, 'redteam', '--json'], {
-      reject: false,
-    });
-    expect(missing.exitCode).toBe(2);
-    expect(JSON.parse(missing.stderr).error.code).toBe('REDTEAM_TARGET_REQUIRED');
-
-    const both = await execa(
+  it('runs social-engineering-core against the local mock target for smoke tests', async () => {
+    const result = await execa(
       'corepack',
-      [
-        'pnpm',
-        'tsx',
-        cli,
-        'redteam',
-        '--target',
-        'http://localhost:3000/agent',
-        '--target-command',
-        'node ./agent.js',
-        '--json',
-      ],
-      { reject: false },
+      ['pnpm', 'tsx', cli, 'run', 'social-engineering-core', '--target', 'mock', '--json', '--fail-on', 'critical'],
+      {
+        reject: false,
+      },
     );
-    expect(both.exitCode).toBe(2);
-    expect(JSON.parse(both.stderr).error.code).toBe('REDTEAM_TARGET_REQUIRED');
+    const output = JSON.parse(result.stdout);
+
+    expect(result.stderr).toBe('');
+    expect(result.exitCode).toBe(1);
+    expect(output).toMatchObject({
+      pack: 'social-engineering-core',
+      target: 'mock',
+      total: 32,
+    });
   });
 });
 

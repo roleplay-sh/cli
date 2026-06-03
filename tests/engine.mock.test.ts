@@ -45,8 +45,6 @@ describe('mock engine', () => {
   it('runs refund scenario and saves failed report', async () => {
     const result = await runScenario({
       scenarioRef: 'refund.yml',
-      provider: 'mock',
-      judge: 'mock',
       outDir: '.roleplay/runs',
     });
 

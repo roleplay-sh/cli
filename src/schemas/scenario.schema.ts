@@ -62,9 +62,7 @@ export const scenarioSchema = z.object({
   failureCriteria: stringArray,
   judge: z
     .object({
-      type: z.enum(['llm', 'mock']).default('mock'),
-      provider: z.enum(['openai', 'mock']).optional(),
-      model: z.string().optional(),
+      type: z.enum(['mock']).default('mock'),
       rubric: z.record(z.number()).optional(),
     })
     .default({ type: 'mock' }),

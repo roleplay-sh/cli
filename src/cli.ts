@@ -5,7 +5,6 @@ import { DoctorCommand } from './commands/doctor.js';
 import { InitCommand } from './commands/init.js';
 import { ListCommand } from './commands/list.js';
 import { McpCommand } from './commands/mcp.js';
-import { RedteamCommand } from './commands/redteam.js';
 import { ReplayCommand } from './commands/replay.js';
 import { ReportCommand } from './commands/report.js';
 import { RunCommand } from './commands/run.js';
@@ -24,14 +23,14 @@ class HelpCommand extends Command {
 Usage:
   roleplay init
   roleplay scenario:create <name>
-  roleplay run <scenario> [--provider mock|openai] [--judge mock|openai]
+  roleplay run <scenario>
   ROLEPLAY_TARGET_URL=<url> roleplay run social-engineering-core
   roleplay report latest|<runId> [--out .roleplay/runs]
   roleplay replay latest|<runId> [--out .roleplay/runs]
   roleplay upload latest|all --project <projectId>
   roleplay list scenarios|runs
   roleplay doctor
-  roleplay redteam --target <url>
+  roleplay mcp
 
 Use --json on commands for machine-readable output.`);
   }
@@ -58,7 +57,6 @@ const commands: Record<string, RunnableCommand> = {
   replay: ReplayCommand,
   list: ListCommand,
   doctor: DoctorCommand,
-  redteam: RedteamCommand,
   mcp: McpCommand,
   help: HelpCommand,
   '--help': HelpCommand,
