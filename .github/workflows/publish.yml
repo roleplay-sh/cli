@@ -30,7 +30,7 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm package:smoke
-      # Configure npm Trusted Publishing for @roleplay-sh/cli in npm package settings.
-      # This workflow intentionally does not use or require an npm token.
-      # Trusted Publishing automatically creates npm provenance attestations.
+      # Temporary first-publish fallback. Remove NODE_AUTH_TOKEN after npm Trusted Publishing is configured.
       - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
