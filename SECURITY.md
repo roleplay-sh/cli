@@ -12,9 +12,7 @@ Do not include real API keys, customer data, private prompts, transcripts, or pr
 
 ## Data Handling
 
-roleplay.sh stores runs locally under `.roleplay/runs`. Scenario files, hidden context, transcripts, and reports may contain sensitive information.
-
-When using OpenAI providers or judges, scenario data and transcripts are sent to the external provider. Use `--provider mock --judge mock` for local-only testing.
+roleplay.sh stores runs locally under `.roleplay/runs`. Scenario files, hidden context, transcripts, and reports may contain sensitive information. Full transcripts stay local unless you explicitly upload them to Team Cloud with full-transcript mode enabled in both the project policy and the CLI command.
 
 ## CLI Target Execution
 

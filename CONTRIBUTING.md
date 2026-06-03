@@ -11,7 +11,7 @@ pnpm test
 pnpm build
 ```
 
-Use mock providers for tests and examples unless you are intentionally testing OpenAI integration.
+Use local attack-pack execution for tests and examples. Do not add external model-provider behavior to the public CLI without an explicit product decision.
 
 ## Pull requests
 

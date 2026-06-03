@@ -1,6 +1,6 @@
 {
   "name": "@roleplay-sh/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Social-engineering regression tests for AI agents.",
   "type": "module",
   "license": "MIT",
