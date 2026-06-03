@@ -32,7 +32,7 @@
     }
   },
   "bin": {
-    "roleplay": "./dist/cli.js"
+    "roleplay": "dist/cli.js"
   },
   "publishConfig": {
     "access": "public"
