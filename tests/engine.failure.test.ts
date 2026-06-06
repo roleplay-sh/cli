@@ -39,6 +39,8 @@ describe('engine failure persistence', () => {
       runScenario({
         scenarioRef: scenarioPath,
         outDir,
+        attackerProvider: 'mock',
+        judgeProvider: 'mock',
       }),
     ).rejects.toThrow(/--yes/);
 

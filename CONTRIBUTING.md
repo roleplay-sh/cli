@@ -11,7 +11,7 @@ pnpm test
 pnpm build
 ```
 
-Use local attack-pack execution for tests and examples. Do not add external model-provider behavior to the public CLI without an explicit product decision.
+Use local attack-pack execution for tests and examples. External model-provider behavior is now part of the public CLI; keep provider additions explicit, tested, and documented.
 
 ## Pull requests
 

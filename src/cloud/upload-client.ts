@@ -80,23 +80,22 @@ export async function buildUploadPayload(input: BuildUploadPayloadInput): Promis
   const metadataPath = join(runDir, 'metadata.json');
   const includeFullEvidence = input.mode === 'full_transcript_opt_in';
 
-  const report = reportSchema.parse(await readJsonArtifact(reportPath));
-  const hasTranscript = await pathExists(transcriptPath);
-  if (includeFullEvidence && !hasTranscript) {
-    throw new AppError({
-      code: 'UPLOAD_TRANSCRIPT_REQUIRED',
-      message: 'Full transcript upload was requested, but transcript.json was not found for this run.',
-      suggestion: 'Run a scenario again to generate transcript.json, or use --mode sanitized_findings.',
-      filePath: transcriptPath,
-      exitCode: 1,
-    });
+  const reportArtifact = await readJsonArtifact(reportPath);
+  const report = reportSchema.parse(reportArtifact);
+  const localMetadataPromise = readOptionalJsonArtifact(metadataPath);
+
+  let transcript;
+  let scenarioYaml;
+  if (includeFullEvidence) {
+    const [transcriptArtifact, scenarioArtifact] = await Promise.all([
+      readRequiredTranscriptArtifact(transcriptPath),
+      readOptionalTextArtifact(scenarioPath),
+    ]);
+    transcript = transcriptSchema.parse(transcriptArtifact);
+    scenarioYaml = scenarioArtifact;
   }
-  const transcript =
-    includeFullEvidence && hasTranscript
-      ? transcriptSchema.parse(await readJsonArtifact(transcriptPath))
-      : undefined;
-  const scenarioYaml = includeFullEvidence && (await pathExists(scenarioPath)) ? await fs.readFile(scenarioPath, 'utf8') : undefined;
-  const localMetadata = (await pathExists(metadataPath)) ? await readJsonArtifact(metadataPath) : undefined;
+
+  const localMetadata = await localMetadataPromise;
   const metadata = includeFullEvidence ? localMetadata : undefined;
   const safeMetadata = safeUploadMetadata(localMetadata);
 
@@ -327,4 +326,24 @@ function isRelativeCloudPath(value: string) {
 async function readJsonArtifact(path: string): Promise<unknown> {
   const contents = await fs.readFile(path, 'utf8');
   return JSON.parse(contents.replace(/^\uFEFF/, ''));
+}
+
+async function readOptionalJsonArtifact(path: string): Promise<unknown | undefined> {
+  return pathExists(path).then((exists) => (exists ? readJsonArtifact(path) : undefined));
+}
+
+async function readOptionalTextArtifact(path: string): Promise<string | undefined> {
+  return pathExists(path).then((exists) => (exists ? fs.readFile(path, 'utf8') : undefined));
+}
+
+async function readRequiredTranscriptArtifact(path: string): Promise<unknown> {
+  if (await pathExists(path)) return readJsonArtifact(path);
+
+  throw new AppError({
+    code: 'UPLOAD_TRANSCRIPT_REQUIRED',
+    message: 'Full transcript upload was requested, but transcript.json was not found for this run.',
+    suggestion: 'Run a scenario again to generate transcript.json, or use --mode sanitized_findings.',
+    filePath: path,
+    exitCode: 1,
+  });
 }

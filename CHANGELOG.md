@@ -4,6 +4,20 @@ All notable changes to roleplay.sh will be documented in this file.
 
 This project follows semantic versioning after the public `0.1.0` release.
 
+## 0.1.3 - 2026-06-06
+
+### Added
+
+- Adaptive LLM attacker providers for OpenAI, Anthropic, Google Gemini, and OpenAI-compatible APIs.
+- LLM transcript judging against scenario success and failure criteria.
+- `--provider`, `--attacker-provider`, `--judge-provider`, model, and OpenAI-compatible base URL flags.
+- Scenario YAML support for attacker and judge provider settings.
+
+### Changed
+
+- Real HTTP and CLI targets default to LLM provider mode for `social-engineering-core`.
+- Mock mode remains available as an explicit deterministic smoke-test path with `--target mock --provider mock`.
+
 ## 0.1.2 - 2026-06-03
 
 ### Changed

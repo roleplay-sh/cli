@@ -19,6 +19,16 @@ ROLEPLAY_AGENT_NAME=support-agent-staging
 # Built-in social-engineering-core target. Set exactly one for CI.
 ROLEPLAY_TARGET_URL=http://localhost:3000/agent
 ROLEPLAY_TARGET_COMMAND=
+
+# Optional LLM provider settings for adaptive attacker turns and semantic judging.
+# Provider choices: mock, openai, anthropic, google, openai-compatible.
+ROLEPLAY_LLM_PROVIDER=mock
+ROLEPLAY_LLM_MODEL=
+ROLEPLAY_OPENAI_API_KEY=
+ROLEPLAY_ANTHROPIC_API_KEY=
+ROLEPLAY_GOOGLE_API_KEY=
+ROLEPLAY_LLM_API_KEY=
+ROLEPLAY_LLM_BASE_URL=
 `;
 
 export class InitCommand extends BaseCommand {

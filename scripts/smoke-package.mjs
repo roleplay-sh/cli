@@ -99,6 +99,11 @@ try {
     'ROLEPLAY_AGENT_NAME=',
     'ROLEPLAY_TARGET_URL=http://localhost:3000/agent',
     'ROLEPLAY_TARGET_COMMAND=',
+    'ROLEPLAY_LLM_PROVIDER=mock',
+    'ROLEPLAY_OPENAI_API_KEY=',
+    'ROLEPLAY_ANTHROPIC_API_KEY=',
+    'ROLEPLAY_GOOGLE_API_KEY=',
+    'ROLEPLAY_LLM_BASE_URL=',
   ]) {
     if (!installedEnvExample.includes(expected)) {
       throw new Error(`Packaged .env.example is missing ${expected}.`);

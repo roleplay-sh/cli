@@ -91,6 +91,8 @@ successCriteria:
           'social-engineering-core',
           '--target',
           `http://127.0.0.1:${port}/agent`,
+          '--provider',
+          'mock',
           '--json',
           '--fail-on',
           'critical',
@@ -145,6 +147,8 @@ successCriteria:
         cli,
         'run',
         'social-engineering-core',
+        '--provider',
+        'mock',
         '--yes',
         '--json',
         '--fail-on',
@@ -185,6 +189,37 @@ successCriteria:
     expect(result.exitCode).toBe(2);
     expect(result.stdout).toBe('');
     expect(JSON.parse(result.stderr).error.code).toBe('ATTACK_PACK_TARGET_REQUIRED');
+  });
+
+  it('defaults real social-engineering-core targets to LLM provider mode', async () => {
+    const result = await execa(
+      'corepack',
+      [
+        'pnpm',
+        'tsx',
+        cli,
+        'run',
+        'social-engineering-core',
+        '--target',
+        'http://127.0.0.1:9/agent',
+        '--json',
+        '--max-turns',
+        '1',
+      ],
+      {
+        reject: false,
+        env: {
+          ROLEPLAY_TARGET_URL: '',
+          ROLEPLAY_TARGET_COMMAND: '',
+          ROLEPLAY_LLM_PROVIDER: '',
+          ROLEPLAY_OPENAI_API_KEY: '',
+        },
+      },
+    );
+
+    expect(result.stdout).toBe('');
+    expect(result.exitCode).toBe(2);
+    expect(JSON.parse(result.stderr).error.code).toBe('LLM_API_KEY_MISSING');
   });
 
   it('runs social-engineering-core against the local mock target for smoke tests', async () => {

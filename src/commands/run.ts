@@ -10,6 +10,7 @@ import { ensureDir } from '../utils/fs.js';
 import { attackPackTemplates } from '../templates/scenarios.js';
 import { AppError } from '../core/errors.js';
 import { BaseCommand } from './base.js';
+import { normalizeProvider, type LlmProviderName } from '../providers/llm/client.js';
 
 const socialEngineeringCorePack = 'social-engineering-core';
 
@@ -31,6 +32,37 @@ export class RunCommand extends BaseCommand {
     json: Flags.boolean({ description: 'Output JSON only.' }),
     out: Flags.string({ default: '.roleplay/runs' }),
     'fail-on': Flags.string({ options: ['warning', 'failed', 'critical'], default: 'failed' }),
+    provider: Flags.string({
+      options: ['mock', 'openai', 'anthropic', 'google', 'openai-compatible'],
+      description: 'Shared attacker and judge provider. Defaults to ROLEPLAY_LLM_PROVIDER, openai for real attack-pack targets, or mock for smoke tests.',
+      default: process.env.ROLEPLAY_LLM_PROVIDER,
+    }),
+    'attacker-provider': Flags.string({
+      options: ['mock', 'openai', 'anthropic', 'google', 'openai-compatible'],
+      description: 'Provider for adaptive attacker turns. Defaults to ROLEPLAY_ATTACKER_PROVIDER or --provider.',
+      default: process.env.ROLEPLAY_ATTACKER_PROVIDER,
+    }),
+    'judge-provider': Flags.string({
+      options: ['mock', 'openai', 'anthropic', 'google', 'openai-compatible'],
+      description: 'Provider for transcript judging. Defaults to ROLEPLAY_JUDGE_PROVIDER or --provider.',
+      default: process.env.ROLEPLAY_JUDGE_PROVIDER,
+    }),
+    model: Flags.string({
+      description: 'Shared LLM model. Defaults to ROLEPLAY_LLM_MODEL or provider defaults.',
+      default: process.env.ROLEPLAY_LLM_MODEL,
+    }),
+    'attacker-model': Flags.string({
+      description: 'Model for adaptive attacker turns. Defaults to ROLEPLAY_ATTACKER_MODEL or --model.',
+      default: process.env.ROLEPLAY_ATTACKER_MODEL,
+    }),
+    'judge-model': Flags.string({
+      description: 'Model for transcript judging. Defaults to ROLEPLAY_JUDGE_MODEL, scenario judge.model, or --model.',
+      default: process.env.ROLEPLAY_JUDGE_MODEL,
+    }),
+    'llm-base-url': Flags.string({
+      description: 'Base URL for openai-compatible providers. Defaults to ROLEPLAY_LLM_BASE_URL.',
+      default: process.env.ROLEPLAY_LLM_BASE_URL,
+    }),
     yes: Flags.boolean({ char: 'y', description: 'Allow local CLI target command execution.' }),
   };
 
@@ -51,6 +83,7 @@ export class RunCommand extends BaseCommand {
     }
 
     const spinner = createSpinner('Running scenario', flags.json);
+    const providers = resolveProviderFlags(flags);
     let result;
     try {
       result = await runScenario({
@@ -58,6 +91,7 @@ export class RunCommand extends BaseCommand {
         maxTurns: flags['max-turns'],
         outDir: flags.out,
         yes: flags.yes,
+        ...providers,
       });
       spinner?.succeed('Scenario complete');
     } catch (error) {
@@ -99,6 +133,13 @@ export class RunCommand extends BaseCommand {
     out: string;
     'fail-on': string;
     yes?: boolean;
+    provider?: string;
+    'attacker-provider'?: string;
+    'judge-provider'?: string;
+    model?: string;
+    'attacker-model'?: string;
+    'judge-model'?: string;
+    'llm-base-url'?: string;
   }): Promise<void> {
     if (Boolean(flags.target) === Boolean(flags['target-command'])) {
       throw new AppError({
@@ -118,6 +159,7 @@ export class RunCommand extends BaseCommand {
     const scenarioDir = await fs.mkdtemp(join(tmpdir(), 'roleplay-social-engineering-core-'));
     await ensureDir(scenarioDir);
     const spinner = createSpinner('Running social-engineering-core', flags.json);
+    const providers = resolveProviderFlags(flags, target.type === 'mock' ? 'mock' : 'openai');
 
     try {
       const files: string[] = [];
@@ -135,6 +177,7 @@ export class RunCommand extends BaseCommand {
           maxTurns: flags['max-turns'],
           outDir: flags.out,
           yes: flags.yes,
+          ...providers,
           metadata: {
             attackPackId: cloudAttackPackIdForScenario(resultNameFromPath(file)),
             attackPackScenario: resultNameFromPath(file),
@@ -182,6 +225,38 @@ export class RunCommand extends BaseCommand {
       await fs.rm(scenarioDir, { recursive: true, force: true });
     }
   }
+}
+
+function resolveProviderFlags(flags: {
+  provider?: string;
+  'attacker-provider'?: string;
+  'judge-provider'?: string;
+  model?: string;
+  'attacker-model'?: string;
+  'judge-model'?: string;
+  'llm-base-url'?: string;
+}, fallback?: LlmProviderName): {
+  attackerProvider?: LlmProviderName;
+  judgeProvider?: LlmProviderName;
+  attackerModel?: string;
+  judgeModel?: string;
+  llmBaseUrl?: string;
+} {
+  const sharedProvider = providerFrom(flags.provider ?? process.env.ROLEPLAY_LLM_PROVIDER, fallback);
+  const attackerProvider = providerFrom(flags['attacker-provider'] ?? process.env.ROLEPLAY_ATTACKER_PROVIDER, sharedProvider);
+  const judgeProvider = providerFrom(flags['judge-provider'] ?? process.env.ROLEPLAY_JUDGE_PROVIDER, sharedProvider);
+  return {
+    attackerProvider,
+    judgeProvider,
+    attackerModel: flags['attacker-model'] ?? process.env.ROLEPLAY_ATTACKER_MODEL ?? flags.model ?? process.env.ROLEPLAY_LLM_MODEL,
+    judgeModel: flags['judge-model'] ?? process.env.ROLEPLAY_JUDGE_MODEL ?? flags.model ?? process.env.ROLEPLAY_LLM_MODEL,
+    llmBaseUrl: flags['llm-base-url'] ?? process.env.ROLEPLAY_LLM_BASE_URL,
+  };
+}
+
+function providerFrom(value: string | undefined, fallback: LlmProviderName | undefined): LlmProviderName | undefined {
+  if (!value && !fallback) return undefined;
+  return normalizeProvider(value, fallback ?? 'mock');
 }
 
 function resultNameFromPath(path: string) {

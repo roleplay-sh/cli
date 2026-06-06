@@ -20,7 +20,7 @@ npx @roleplay-sh/cli --help
 
 ```bash
 roleplay init
-roleplay run social-engineering-core --target mock --fail-on critical
+roleplay run social-engineering-core --target mock --provider mock --fail-on critical
 roleplay report latest
 roleplay replay latest
 ```
@@ -32,6 +32,7 @@ HTTP target:
 ```bash
 roleplay run social-engineering-core \
   --target http://localhost:3000/agent \
+  --provider openai \
   --fail-on critical
 ```
 
@@ -40,9 +41,18 @@ CLI target:
 ```bash
 roleplay run social-engineering-core \
   --target-command "node ./agent.js" \
+  --provider openai \
   --fail-on critical \
   --yes
 ```
+
+Set the provider API key before running a real attack pack:
+
+```bash
+export ROLEPLAY_OPENAI_API_KEY="your-openai-key"
+```
+
+Supported providers are `openai`, `anthropic`, `google`, and `openai-compatible`. Use `--attacker-provider` and `--judge-provider` when you want different providers for adaptive attacker turns and transcript judging. Use `--target mock --provider mock` for deterministic local smoke tests.
 
 ## Upload Sanitized Findings To Team Cloud
 
@@ -75,6 +85,8 @@ Sanitized upload is the default. Full transcripts, raw scenario YAML, and local 
   run: pnpm dlx @roleplay-sh/cli run social-engineering-core --fail-on critical
   env:
     ROLEPLAY_TARGET_URL: ${{ secrets.ROLEPLAY_TARGET_URL }}
+    ROLEPLAY_LLM_PROVIDER: openai
+    ROLEPLAY_OPENAI_API_KEY: ${{ secrets.ROLEPLAY_OPENAI_API_KEY }}
 
 - name: Upload sanitized findings
   if: always()

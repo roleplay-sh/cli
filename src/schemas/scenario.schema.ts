@@ -5,6 +5,12 @@ import { AppError } from '../core/errors.js';
 import { interpolateEnv } from '../utils/interpolation.js';
 
 const stringArray = z.array(z.string()).default([]);
+const llmProviderSchema = z.enum(['mock', 'openai', 'anthropic', 'google', 'openai-compatible']);
+const providerConfigSchema = z.object({
+  provider: llmProviderSchema.default('mock'),
+  model: z.string().min(1).optional(),
+  baseUrl: z.string().url().optional(),
+});
 
 const httpTargetSchema = z.object({
   type: z.literal('http'),
@@ -60,12 +66,8 @@ export const scenarioSchema = z.object({
   hiddenContext: stringArray,
   successCriteria: z.array(z.string()).min(1, 'must include at least one success criterion'),
   failureCriteria: stringArray,
-  judge: z
-    .object({
-      type: z.enum(['mock']).default('mock'),
-      rubric: z.record(z.number()).optional(),
-    })
-    .default({ type: 'mock' }),
+  attacker: providerConfigSchema.optional(),
+  judge: providerConfigSchema.extend({ type: llmProviderSchema.default('mock'), rubric: z.record(z.number()).optional() }).omit({ provider: true }).default({ type: 'mock' }),
   output: z
     .object({
       expectations: stringArray,

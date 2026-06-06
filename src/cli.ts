@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
-import { DoctorCommand } from './commands/doctor.js';
-import { InitCommand } from './commands/init.js';
-import { ListCommand } from './commands/list.js';
-import { McpCommand } from './commands/mcp.js';
-import { ReplayCommand } from './commands/replay.js';
-import { ReportCommand } from './commands/report.js';
-import { RunCommand } from './commands/run.js';
-import { UploadCommand } from './commands/upload.js';
-import { ScenarioCreateCommand } from './commands/scenario/create.js';
 
 class HelpCommand extends Command {
   static description = 'roleplay.sh CLI';
@@ -24,7 +15,7 @@ Usage:
   roleplay init
   roleplay scenario:create <name>
   roleplay run <scenario>
-  ROLEPLAY_TARGET_URL=<url> roleplay run social-engineering-core
+  roleplay run social-engineering-core --target <url> --provider openai
   roleplay report latest|<runId> [--out .roleplay/runs]
   roleplay replay latest|<runId> [--out .roleplay/runs]
   roleplay upload latest|all --project <projectId>
@@ -48,25 +39,30 @@ type RunnableCommand = {
   run(argv?: string[], options?: unknown): Promise<unknown>;
 };
 
-const commands: Record<string, RunnableCommand> = {
-  init: InitCommand,
-  'scenario:create': ScenarioCreateCommand,
-  run: RunCommand,
-  upload: UploadCommand,
-  report: ReportCommand,
-  replay: ReplayCommand,
-  list: ListCommand,
-  doctor: DoctorCommand,
-  mcp: McpCommand,
-  help: HelpCommand,
-  '--help': HelpCommand,
-  '-h': HelpCommand,
+type CommandLoader = () => Promise<RunnableCommand>;
+
+const loadHelpCommand: CommandLoader = async () => HelpCommand;
+
+const commands: Record<string, CommandLoader> = {
+  init: async () => (await import('./commands/init.js')).InitCommand,
+  'scenario:create': async () => (await import('./commands/scenario/create.js')).ScenarioCreateCommand,
+  run: async () => (await import('./commands/run.js')).RunCommand,
+  upload: async () => (await import('./commands/upload.js')).UploadCommand,
+  report: async () => (await import('./commands/report.js')).ReportCommand,
+  replay: async () => (await import('./commands/replay.js')).ReplayCommand,
+  list: async () => (await import('./commands/list.js')).ListCommand,
+  doctor: async () => (await import('./commands/doctor.js')).DoctorCommand,
+  mcp: async () => (await import('./commands/mcp.js')).McpCommand,
+  help: loadHelpCommand,
+  '--help': loadHelpCommand,
+  '-h': loadHelpCommand,
 };
 
-const CommandClass: RunnableCommand | undefined = command ? commands[command] : HelpCommand;
-if (!CommandClass) {
+const commandLoader: CommandLoader | undefined = command ? commands[command] : loadHelpCommand;
+if (!commandLoader) {
   process.stderr.write(`Unknown command: ${command}\nRun roleplay --help.\n`);
   process.exit(2);
 }
 
+const CommandClass = await commandLoader();
 await CommandClass.run(command && commands[command] ? rest : argv, import.meta.url);

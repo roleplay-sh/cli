@@ -8,6 +8,7 @@ import { createRunPaths, resolveScenarioPath, saveRun, type RunPaths } from './r
 import { addTurn, createTranscript, finishTranscript } from './transcript.js';
 import { generateMarkdownReport } from './reporter.js';
 import { toAppError } from './errors.js';
+import type { LlmProviderName } from '../providers/llm/client.js';
 
 export interface RunOptions {
   scenarioRef: string;
@@ -15,6 +16,11 @@ export interface RunOptions {
   outDir?: string;
   yes?: boolean;
   metadata?: Record<string, unknown>;
+  attackerProvider?: LlmProviderName;
+  judgeProvider?: LlmProviderName;
+  attackerModel?: string;
+  judgeModel?: string;
+  llmBaseUrl?: string;
 }
 
 export interface RunResult {
@@ -31,9 +37,22 @@ export async function runScenario(options: RunOptions): Promise<RunResult> {
   const maxTurns = options.maxTurns ?? scenario.simulation.maxTurns;
   const paths = await createRunPaths(options.outDir);
   const transcript = createTranscript(paths.runId, scenario.name);
-  const userSimulator = createUserSimulator();
+  const defaultProvider = scenario.target.type === 'mock' ? 'mock' : 'openai';
+  const scenarioJudgeProvider = scenario.judge.type === 'mock' ? defaultProvider : scenario.judge.type;
+  const scenarioAttackerProvider = scenario.attacker?.provider ?? scenarioJudgeProvider;
+  const attackerProvider = options.attackerProvider ?? scenarioAttackerProvider;
+  const judgeProvider = options.judgeProvider ?? scenarioJudgeProvider;
+  const userSimulator = createUserSimulator({
+    provider: attackerProvider,
+    model: options.attackerModel ?? scenario.attacker?.model,
+    baseUrl: options.llmBaseUrl ?? scenario.attacker?.baseUrl,
+  });
   const target = createTargetAgent(scenario.target, { allowCliExecution: options.yes });
-  const judge = createJudge(scenario.judge.type);
+  const judge = createJudge({
+    provider: judgeProvider,
+    model: options.judgeModel ?? scenario.judge.model,
+    baseUrl: options.llmBaseUrl ?? scenario.judge.baseUrl,
+  });
 
   try {
     for (let turn = 1; turn <= maxTurns; turn += 1) {
