@@ -2,7 +2,7 @@
 
 Social-engineering regression tests for AI agents.
 
-`roleplay` runs adversarial roleplay scenarios against local, HTTP, CLI, or mock agents, records replayable evidence, and can upload sanitized findings to Team Cloud.
+`roleplay` runs adversarial roleplay scenarios against local, HTTP, CLI, or mock agents, records replayable evidence, and uploads sanitized findings to the roleplay.sh cloud workbench.
 
 ## Install
 
@@ -54,9 +54,9 @@ export ROLEPLAY_OPENAI_API_KEY="your-openai-key"
 
 Supported providers are `openai`, `anthropic`, `google`, and `openai-compatible`. Use `--attacker-provider` and `--judge-provider` when you want different providers for adaptive attacker turns and transcript judging. Use `--target mock --provider mock` for deterministic local smoke tests.
 
-## Upload Sanitized Findings To Team Cloud
+## Upload Sanitized Findings To The Cloud Workbench
 
-Create a project and API key in Team Cloud at `https://app.roleplay.sh`, then run:
+Start a Builder or Team trial at `https://app.roleplay.sh`, create a workspace project and API key, then run:
 
 ```bash
 ROLEPLAY_CLOUD_URL=https://app.roleplay.sh \
@@ -73,7 +73,7 @@ Sanitized upload is the default. Full transcripts, raw scenario YAML, and local 
 - `roleplay run` runs a scenario file or built-in attack pack.
 - `roleplay report` prints a saved run report.
 - `roleplay replay` replays transcript evidence.
-- `roleplay upload` uploads sanitized findings to Team Cloud.
+- `roleplay upload` uploads sanitized findings to the roleplay.sh cloud workbench.
 - `roleplay list` lists local runs.
 - `roleplay doctor` checks local and Cloud configuration.
 - `roleplay mcp` exposes roleplay.sh through MCP.

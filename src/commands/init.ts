@@ -10,7 +10,7 @@ import { ensureDir, pathExists, writeJson } from '../utils/fs.js';
 const envExample = `# Optional agent credentials used by your own HTTP/CLI target.
 AGENT_API_KEY=
 
-# Team Cloud upload settings.
+# cloud workbench upload settings.
 ROLEPLAY_CLOUD_URL=http://127.0.0.1:3000
 ROLEPLAY_PROJECT_ID=proj_support
 ROLEPLAY_API_KEY=

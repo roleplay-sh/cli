@@ -141,7 +141,7 @@ try {
       response.end(
         JSON.stringify({
           status: 'ok',
-          service: 'roleplay.sh Team Cloud',
+          service: 'roleplay.sh Workbench',
           privacy: {
             defaultUploadMode: 'sanitized_findings',
             fullTranscriptUpload: false,
@@ -245,7 +245,7 @@ try {
     throw new Error('Packaged CLI upload response did not match the requested project and mode.');
   }
   if (!upload.runUrl.startsWith(`${endpoint}/runs?run=`)) {
-    throw new Error('Packaged CLI did not return an absolute Team Cloud run URL.');
+    throw new Error('Packaged CLI did not return an absolute cloud workbench run URL.');
   }
   if (uploadPayload.run.transcript || uploadPayload.run.scenarioYaml || uploadPayload.run.metadata) {
     throw new Error('Packaged CLI leaked full evidence during sanitized upload.');

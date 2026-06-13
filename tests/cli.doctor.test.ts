@@ -15,7 +15,7 @@ afterEach(async () => {
 });
 
 describe('cli doctor', () => {
-  it('checks Team Cloud health when requested', async () => {
+  it('checks cloud workbench health when requested', async () => {
     const cwd = await roleplayProject();
     let requestedPath = '';
     const server = createServer((request, response) => {
@@ -24,7 +24,7 @@ describe('cli doctor', () => {
       response.end(
         JSON.stringify({
           status: 'ok',
-          service: 'roleplay.sh Team Cloud',
+          service: 'roleplay.sh cloud workbench',
           privacy: {
             defaultUploadMode: 'sanitized_findings',
             fullTranscriptUpload: false,
@@ -48,7 +48,7 @@ describe('cli doctor', () => {
         ok: boolean;
         checks: Array<{ name: string; ok: boolean; detail?: string }>;
       };
-      const cloudCheck = output.checks.find((check) => check.name === 'Team Cloud health');
+      const cloudCheck = output.checks.find((check) => check.name === 'cloud workbench health');
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
@@ -71,7 +71,7 @@ describe('cli doctor', () => {
       response.end(
         JSON.stringify({
           status: 'ok',
-          service: 'roleplay.sh Team Cloud',
+          service: 'roleplay.sh cloud workbench',
           privacy: {
             defaultUploadMode: 'full_transcript_opt_in',
             fullTranscriptUpload: true,
@@ -93,7 +93,7 @@ describe('cli doctor', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
-      expect(result.stdout).toContain('ok Team Cloud health');
+      expect(result.stdout).toContain('ok cloud workbench health');
       expect(result.stdout).toContain('upload mode full_transcript_opt_in');
       expect(result.stdout).toContain('redacted snippets off');
       expect(result.stdout).toContain('secret redaction on');
@@ -102,7 +102,7 @@ describe('cli doctor', () => {
     }
   });
 
-  it('verifies Team Cloud upload credentials when project and API key are configured', async () => {
+  it('verifies cloud workbench upload credentials when project and API key are configured', async () => {
     const cwd = await roleplayProject();
     const requestedPaths: string[] = [];
     const authHeaders: Array<string | undefined> = [];
@@ -112,7 +112,7 @@ describe('cli doctor', () => {
 
       if (request.url === '/api/health') {
         response.writeHead(200, { 'content-type': 'application/json' });
-        response.end(JSON.stringify({ status: 'ok', service: 'roleplay.sh Team Cloud' }));
+        response.end(JSON.stringify({ status: 'ok', service: 'roleplay.sh cloud workbench' }));
         return;
       }
 
@@ -160,8 +160,8 @@ describe('cli doctor', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
-      expect(result.stdout).toContain('ok Team Cloud health');
-      expect(result.stdout).toContain('ok Team Cloud API key');
+      expect(result.stdout).toContain('ok cloud workbench health');
+      expect(result.stdout).toContain('ok cloud workbench API key');
       expect(result.stdout).toContain('Release gate key');
       expect(result.stdout).toContain('sanitized_findings');
       expect(requestedPaths).toEqual(['/api/health', '/api/projects/proj_support/api-keys/verify']);
@@ -171,11 +171,11 @@ describe('cli doctor', () => {
     }
   });
 
-  it('reports missing Team Cloud credential pairs as a failed doctor check', async () => {
+  it('reports missing cloud workbench credential pairs as a failed doctor check', async () => {
     const cwd = await roleplayProject();
     const server = createServer((_request, response) => {
       response.writeHead(200, { 'content-type': 'application/json' });
-      response.end(JSON.stringify({ status: 'ok', service: 'roleplay.sh Team Cloud' }));
+      response.end(JSON.stringify({ status: 'ok', service: 'roleplay.sh cloud workbench' }));
     });
 
     try {
@@ -193,14 +193,14 @@ describe('cli doctor', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
-      expect(result.stdout).toContain('fail Team Cloud API key');
+      expect(result.stdout).toContain('fail cloud workbench API key');
       expect(result.stdout).toContain('ROLEPLAY_PROJECT_ID/--project and ROLEPLAY_API_KEY/--api-key');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
     }
   });
 
-  it('reports a failed Team Cloud health check without corrupting text output', async () => {
+  it('reports a failed cloud workbench health check without corrupting text output', async () => {
     const cwd = await roleplayProject();
     const server = createServer((_request, response) => {
       response.writeHead(503, { 'content-type': 'application/json' });
@@ -218,7 +218,7 @@ describe('cli doctor', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
-      expect(result.stdout).toContain('fail Team Cloud health');
+      expect(result.stdout).toContain('fail cloud workbench health');
       expect(result.stdout).toContain('HTTP 503');
       expect(result.stdout).not.toContain('â');
     } finally {

@@ -13,21 +13,21 @@ import { createSpinner } from '../utils/output.js';
 import { BaseCommand } from './base.js';
 
 export class UploadCommand extends BaseCommand {
-  static description = 'Upload one run or all local runs to roleplay.sh Team Cloud.';
+  static description = 'Upload one run or all local runs to roleplay.sh cloud workbench.';
   static args = {
     run: Args.string({ required: false, default: 'latest' }),
   };
   static flags = {
     endpoint: Flags.string({
-      description: 'Team Cloud URL.',
+      description: 'cloud workbench URL.',
       default: process.env.ROLEPLAY_CLOUD_URL ?? 'http://127.0.0.1:3000',
     }),
     project: Flags.string({
-      description: 'Team Cloud project ID.',
+      description: 'cloud workbench project ID.',
       default: process.env.ROLEPLAY_PROJECT_ID,
     }),
     'api-key': Flags.string({
-      description: 'Team Cloud API key. Defaults to ROLEPLAY_API_KEY.',
+      description: 'cloud workbench API key. Defaults to ROLEPLAY_API_KEY.',
       default: process.env.ROLEPLAY_API_KEY,
     }),
     mode: Flags.string({
@@ -110,7 +110,7 @@ export class UploadCommand extends BaseCommand {
           return;
         }
 
-        this.log(`${chalk.cyan('roleplay.sh Team Cloud')}
+        this.log(`${chalk.cyan('roleplay.sh cloud workbench')}
 
 Project: ${result.projectId}
 Runs uploaded: ${result.uploaded}
@@ -144,7 +144,7 @@ Mode: ${result.mode}`);
         return;
       }
 
-      this.log(`${chalk.cyan('roleplay.sh Team Cloud')}
+      this.log(`${chalk.cyan('roleplay.sh cloud workbench')}
 
 Project: ${result.projectId}
 Run: ${result.runId}

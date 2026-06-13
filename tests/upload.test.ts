@@ -67,18 +67,18 @@ describe('upload client', () => {
     expect(result.runUrl).toBe('http://127.0.0.1:3000/runs?run=run_upload_test&project=proj_support');
   });
 
-  it('fails fast when the Team Cloud API key is missing', () => {
+  it('fails fast when the cloud workbench API key is missing', () => {
     expect(() => requireUploadApiKey(undefined)).toThrow(AppError);
     expect(() => requireUploadApiKey('')).toThrow(
-      'ROLEPLAY_API_KEY or --api-key is required to upload to Team Cloud.',
+      'ROLEPLAY_API_KEY or --api-key is required to upload to cloud workbench.',
     );
     expect(requireUploadApiKey('  rpsh_live_test  ')).toBe('rpsh_live_test');
   });
 
-  it('fails fast when the Team Cloud project ID is missing', () => {
+  it('fails fast when the cloud workbench project ID is missing', () => {
     expect(() => requireUploadProjectId(undefined)).toThrow(AppError);
     expect(() => requireUploadProjectId('')).toThrow(
-      'ROLEPLAY_PROJECT_ID or --project is required to upload to Team Cloud.',
+      'ROLEPLAY_PROJECT_ID or --project is required to upload to cloud workbench.',
     );
     expect(requireUploadProjectId('  proj_support  ')).toBe('proj_support');
   });
@@ -129,7 +129,7 @@ describe('upload client', () => {
     }
   });
 
-  it('surfaces Team Cloud authentication failures clearly', async () => {
+  it('surfaces cloud workbench authentication failures clearly', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -149,7 +149,7 @@ describe('upload client', () => {
     ).rejects.toMatchObject({
       code: 'UPLOAD_FAILED',
       message: 'A valid project API key is required.',
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that cloud workbench is running.',
     });
   });
 
@@ -236,12 +236,12 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_CREDENTIALS_INVALID',
-      message: 'Team Cloud API key verification response did not match the requested project.',
-      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+      message: 'cloud workbench API key verification response did not match the requested project.',
+      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     });
   });
 
-  it('surfaces Team Cloud API key verification failures clearly', async () => {
+  it('surfaces cloud workbench API key verification failures clearly', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -261,11 +261,11 @@ describe('upload client', () => {
     ).rejects.toMatchObject({
       code: 'UPLOAD_CREDENTIALS_FAILED',
       message: 'A valid project API key is required.',
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that cloud workbench is running.',
     });
   });
 
-  it('surfaces Team Cloud network failures clearly', async () => {
+  it('surfaces cloud workbench network failures clearly', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -281,12 +281,12 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_FAILED',
-      message: 'Could not reach Team Cloud at http://127.0.0.1:9.',
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      message: 'Could not reach cloud workbench at http://127.0.0.1:9.',
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that cloud workbench is running.',
     });
   });
 
-  it('rejects malformed successful Team Cloud upload responses', async () => {
+  it('rejects malformed successful cloud workbench upload responses', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -305,12 +305,12 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_RESPONSE_INVALID',
-      message: 'Team Cloud returned an invalid upload response.',
-      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+      message: 'cloud workbench returned an invalid upload response.',
+      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     });
   });
 
-  it('rejects impossible successful Team Cloud upload counts', async () => {
+  it('rejects impossible successful cloud workbench upload counts', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -334,11 +334,11 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_RESPONSE_INVALID',
-      message: 'Team Cloud returned an invalid upload response.',
+      message: 'cloud workbench returned an invalid upload response.',
     });
   });
 
-  it('rejects successful Team Cloud upload responses with external report URLs', async () => {
+  it('rejects successful cloud workbench upload responses with external report URLs', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -363,11 +363,11 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_RESPONSE_INVALID',
-      message: 'Team Cloud returned an invalid upload response.',
+      message: 'cloud workbench returned an invalid upload response.',
     });
   });
 
-  it('rejects successful Team Cloud upload responses that do not match the requested upload', async () => {
+  it('rejects successful cloud workbench upload responses that do not match the requested upload', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -391,8 +391,8 @@ describe('upload client', () => {
       }),
     ).rejects.toMatchObject({
       code: 'UPLOAD_RESPONSE_INVALID',
-      message: 'Team Cloud upload response did not match the requested project, run, or mode.',
-      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+      message: 'cloud workbench upload response did not match the requested project, run, or mode.',
+      suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     });
   });
 
@@ -418,7 +418,7 @@ describe('upload client', () => {
     }
   });
 
-  it('rejects contradictory local reports before sending them to Team Cloud', async () => {
+  it('rejects contradictory local reports before sending them to cloud workbench', async () => {
     const runsDir = await mkdtemp(join(tmpdir(), 'roleplay-upload-'));
     try {
       await writeRunArtifact(runsDir, 'run_passed_with_failures', 'report.json', {
@@ -448,7 +448,7 @@ describe('upload client', () => {
     }
   });
 
-  it('rejects invalid local report timestamps before sending them to Team Cloud', async () => {
+  it('rejects invalid local report timestamps before sending them to cloud workbench', async () => {
     const runsDir = await mkdtemp(join(tmpdir(), 'roleplay-upload-'));
     try {
       await writeRunArtifact(runsDir, 'run_invalid_dates', 'report.json', {

@@ -29,8 +29,8 @@ The publish workflow uses GitHub OIDC and intentionally does not require an npm 
 Create a GitHub release or push a version tag:
 
 ```bash
-git tag v0.1.3
-git push origin v0.1.3
+git tag v0.1.4
+git push origin v0.1.4
 ```
 
 The publish workflow runs checks and then publishes with:
@@ -58,7 +58,7 @@ export ROLEPLAY_OPENAI_API_KEY=<openai-key>
 roleplay run social-engineering-core --target http://localhost:3000/agent --provider openai --max-turns 1 --fail-on critical
 ```
 
-For Team Cloud upload verification, create a project API key at `https://app.roleplay.sh` and run:
+For cloud workbench upload verification, start a Builder or Team trial, create a project API key at `https://app.roleplay.sh`, and run:
 
 ```bash
 ROLEPLAY_CLOUD_URL=https://app.roleplay.sh \

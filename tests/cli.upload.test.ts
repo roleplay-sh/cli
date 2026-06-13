@@ -163,7 +163,7 @@ describe('cli upload', () => {
     expect(result.stdout).toBe('');
     expect(JSON.parse(result.stderr).error).toMatchObject({
       code: 'UPLOAD_PROJECT_REQUIRED',
-      message: 'ROLEPLAY_PROJECT_ID or --project is required to upload to Team Cloud.',
+      message: 'ROLEPLAY_PROJECT_ID or --project is required to upload to cloud workbench.',
     });
   });
 

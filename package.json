@@ -1,10 +1,9 @@
 {
   "name": "@roleplay-sh/cli",
-  "version": "0.1.3",
-  "description": "Social-engineering regression tests for AI agents.",
+  "version": "0.1.4",
+  "description": "Paid social-engineering workbench CLI for AI agents.",
   "type": "module",
   "license": "MIT",
-  "author": "MARAM TECH VENTURES LTD",
   "keywords": [
     "ai",
     "agents",

@@ -4,6 +4,14 @@ All notable changes to roleplay.sh will be documented in this file.
 
 This project follows semantic versioning after the public `0.1.0` release.
 
+## 0.1.4 - Unreleased
+
+### Changed
+
+- Updated CLI upload, doctor, and setup copy for the paid roleplay.sh cloud workbench.
+- Clarified that production uploads require a Builder or Team trial, project API key, and sanitized upload policy.
+- Kept public command syntax stable while preserving mock smoke tests and BYO provider usage for real runs.
+
 ## 0.1.3 - 2026-06-06
 
 ### Added
@@ -31,7 +39,7 @@ This project follows semantic versioning after the public `0.1.0` release.
 - Dedicated public CLI package for local attack-pack execution.
 - Built-in `social-engineering-core` attack pack.
 - Local reports and replayable transcripts.
-- Sanitized Team Cloud upload support.
+- Sanitized cloud workbench upload support.
 
 ## 0.1.0 - 2026-05-17
 

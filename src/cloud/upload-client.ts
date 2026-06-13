@@ -54,7 +54,7 @@ export function requireUploadApiKey(apiKey: string | undefined): string {
 
   throw new AppError({
     code: 'UPLOAD_API_KEY_REQUIRED',
-    message: 'ROLEPLAY_API_KEY or --api-key is required to upload to Team Cloud.',
+    message: 'ROLEPLAY_API_KEY or --api-key is required to upload to cloud workbench.',
     suggestion: 'Create or copy a project API key from CI & Uploads, then pass --api-key or set ROLEPLAY_API_KEY.',
     exitCode: 1,
   });
@@ -66,7 +66,7 @@ export function requireUploadProjectId(projectId: string | undefined): string {
 
   throw new AppError({
     code: 'UPLOAD_PROJECT_REQUIRED',
-    message: 'ROLEPLAY_PROJECT_ID or --project is required to upload to Team Cloud.',
+    message: 'ROLEPLAY_PROJECT_ID or --project is required to upload to cloud workbench.',
     suggestion: 'Copy the project ID from CI & Uploads, then pass --project or set ROLEPLAY_PROJECT_ID.',
     exitCode: 1,
   });
@@ -149,8 +149,8 @@ export async function uploadToCloud(input: {
   } catch (error) {
     throw new AppError({
       code: 'UPLOAD_FAILED',
-      message: `Could not reach Team Cloud at ${endpoint}.`,
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      message: `Could not reach cloud workbench at ${endpoint}.`,
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that cloud workbench is running.',
       cause: error,
       exitCode: 1,
     });
@@ -164,7 +164,7 @@ export async function uploadToCloud(input: {
         body && 'error' in body && body.error
           ? body.error
           : `Cloud upload failed with HTTP ${response.status}.`,
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_API_KEY, and that cloud workbench is running.',
       exitCode: 1,
     });
   }
@@ -195,8 +195,8 @@ export async function verifyCloudCredentials(input: {
   } catch (error) {
     throw new AppError({
       code: 'UPLOAD_CREDENTIALS_FAILED',
-      message: `Could not reach Team Cloud at ${endpoint}.`,
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      message: `Could not reach cloud workbench at ${endpoint}.`,
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that cloud workbench is running.',
       cause: error,
       exitCode: 1,
     });
@@ -210,7 +210,7 @@ export async function verifyCloudCredentials(input: {
         body && 'error' in body && body.error
           ? body.error
           : `Cloud API key verification failed with HTTP ${response.status}.`,
-      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that Team Cloud is running.',
+      suggestion: 'Check ROLEPLAY_CLOUD_URL, ROLEPLAY_PROJECT_ID, ROLEPLAY_API_KEY, and that cloud workbench is running.',
       exitCode: 1,
     });
   }
@@ -238,8 +238,8 @@ function parseUploadResponse(body: UploadResponse | { error?: string } | undefin
 
   throw new AppError({
     code: 'UPLOAD_RESPONSE_INVALID',
-    message: 'Team Cloud returned an invalid upload response.',
-    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+    message: 'cloud workbench returned an invalid upload response.',
+    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     exitCode: 1,
   });
 }
@@ -275,8 +275,8 @@ function parseCredentialVerification(
 
   throw new AppError({
     code: 'UPLOAD_CREDENTIALS_INVALID',
-    message: 'Team Cloud returned an invalid API key verification response.',
-    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+    message: 'cloud workbench returned an invalid API key verification response.',
+    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     exitCode: 1,
   });
 }
@@ -292,8 +292,8 @@ function assertUploadResponseMatchesPayload(response: UploadResponse, payload: C
 
   throw new AppError({
     code: 'UPLOAD_RESPONSE_INVALID',
-    message: 'Team Cloud upload response did not match the requested project, run, or mode.',
-    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+    message: 'cloud workbench upload response did not match the requested project, run, or mode.',
+    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     exitCode: 1,
   });
 }
@@ -305,8 +305,8 @@ function assertCredentialVerificationMatchesRequest(response: CloudCredentialVer
 
   throw new AppError({
     code: 'UPLOAD_CREDENTIALS_INVALID',
-    message: 'Team Cloud API key verification response did not match the requested project.',
-    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh Team Cloud backend.',
+    message: 'cloud workbench API key verification response did not match the requested project.',
+    suggestion: 'Check that ROLEPLAY_CLOUD_URL points to a compatible roleplay.sh cloud workbench backend.',
     exitCode: 1,
   });
 }
