@@ -1,0 +1,25 @@
+name: Deprecate old npm versions
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Deprecate previous public CLI versions
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          message="This version is deprecated. Upgrade to @roleplay-sh/cli@0.1.11 or newer; real attack packs are now delivered privately through the roleplay.sh Workbench."
+          for version in 0.1.1 0.1.2 0.1.3 0.1.4 0.1.5 0.1.6 0.1.7 0.1.8 0.1.9 0.1.10; do
+            npm deprecate "@roleplay-sh/cli@${version}" "$message"
+          done
