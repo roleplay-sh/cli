@@ -19,7 +19,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -euo pipefail
-          message="This version is deprecated. Upgrade to @roleplay-sh/cli@0.1.11 or newer; real attack packs are now delivered privately through the roleplay.sh Workbench."
-          for version in 0.1.1 0.1.2 0.1.3 0.1.4 0.1.5 0.1.6 0.1.7 0.1.8 0.1.9 0.1.10; do
+          message="This version is deprecated. Upgrade to @roleplay-sh/cli@0.1.12 or newer; public error output is hardened and real attack packs are delivered privately through the Roleplay Workbench."
+          for version in 0.1.1 0.1.2 0.1.3 0.1.4 0.1.5 0.1.6 0.1.7 0.1.8 0.1.9 0.1.10 0.1.11; do
             npm deprecate "@roleplay-sh/cli@${version}" "$message"
           done
