@@ -8,7 +8,7 @@ import { createTargetAgent } from '../targets/index.js';
 import { createRunPaths, resolveScenarioPath, saveRun, type RunPaths } from './run-store.js';
 import { addTurn, createTranscript, finishTranscript } from './transcript.js';
 import { generateMarkdownReport } from './reporter.js';
-import { toAppError } from './errors.js';
+import { publicErrorMessage, publicErrorSupportCta, toAppError } from './errors.js';
 import type { LlmProviderName } from '../providers/llm/client.js';
 
 export interface RunOptions {
@@ -93,18 +93,16 @@ export async function runScenario(options: RunOptions): Promise<RunResult> {
       scenario: scenario.name,
       status: 'failed',
       score: 0,
-      summary: `Run failed before evaluation completed: ${appError.message}`,
+      summary: `${publicErrorMessage} Reference: ${appError.reference}`,
       criteria: [],
       failures: [
         {
           type: appError.code.toLowerCase(),
           severity: appError.exitCode === 4 ? 'high' : 'medium',
-          message: appError.message,
+          message: `${publicErrorMessage} Reference: ${appError.reference}`,
         },
       ],
-      recommendations: [
-        appError.suggestion ?? 'Inspect the saved transcript and target configuration.',
-      ],
+      recommendations: [publicErrorSupportCta],
       startedAt: transcript.startedAt,
       endedAt: transcript.endedAt ?? new Date().toISOString(),
       judgeMetadata: {

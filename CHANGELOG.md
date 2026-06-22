@@ -4,7 +4,15 @@ All notable changes to roleplay.sh will be documented in this file.
 
 This project follows semantic versioning after the public `0.1.0` release.
 
-## 0.1.11 - Unreleased
+## 0.1.12 - 2026-06-22
+
+### Changed
+
+- Hardened user-facing CLI errors so runtime, provider, environment, endpoint, and file details are not printed by default.
+- Added safe error references and support guidance for human and JSON error output.
+- Added redacted local debug logs keyed by the same error reference.
+
+## 0.1.11 - 2026-06-22
 
 ### Changed
 

@@ -2,6 +2,7 @@ import { Flags } from '@oclif/core';
 import { promises as fs } from 'node:fs';
 import { join, relative } from 'node:path';
 import { BaseCommand } from './base.js';
+import { publicErrorMessage, toAppError } from '../core/errors.js';
 import { runScenario } from '../core/engine.js';
 import { latestRunId, resolveRunDir } from '../core/run-store.js';
 import { pathExists } from '../utils/fs.js';
@@ -106,10 +107,17 @@ async function handleMessage(message: JsonRpcRequest) {
     if (message.method === 'tools/list') return rpcResult(id, { tools });
     if (message.method === 'tools/call') return rpcResult(id, await callTool(message.params));
     if (id === undefined) return undefined;
-    return rpcError(id, -32601, `Unknown method: ${message.method ?? 'undefined'}`);
+    return rpcError(id, -32601, publicErrorMessage);
   } catch (error) {
     if (id === undefined) return undefined;
-    return rpcError(id, -32000, error instanceof Error ? error.message : 'MCP tool failed');
+    const appError = toAppError(error);
+    const publicError = appError.toPublicError();
+    return rpcError(id, -32000, publicErrorMessage, {
+      code: publicError.code,
+      message: publicError.message,
+      reference: publicError.reference,
+      supportCta: publicError.supportCta,
+    });
   }
 }
 
@@ -187,8 +195,8 @@ function rpcResult(id: JsonRpcId | undefined, result: JsonValue) {
   return { jsonrpc: '2.0', id: id ?? null, result };
 }
 
-function rpcError(id: JsonRpcId | undefined, code: number, message: string) {
-  return { jsonrpc: '2.0', id: id ?? null, error: { code, message } };
+function rpcError(id: JsonRpcId | undefined, code: number, message: string, data?: JsonValue) {
+  return { jsonrpc: '2.0', id: id ?? null, error: { code, message, ...(data ? { data } : {}) } };
 }
 
 function toolJson(value: JsonValue) {

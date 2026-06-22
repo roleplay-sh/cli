@@ -54,10 +54,9 @@ describe('cli doctor', () => {
       expect(result.stderr).toBe('');
       expect(output.ok).toBe(true);
       expect(cloudCheck).toMatchObject({ ok: true });
-      expect(cloudCheck?.detail).toContain(`${endpoint}/api/health`);
-      expect(cloudCheck?.detail).toContain('upload mode sanitized_findings');
-      expect(cloudCheck?.detail).toContain('redacted snippets on');
-      expect(cloudCheck?.detail).toContain('secret redaction on');
+      expect(cloudCheck?.detail).toContain('workbench is reachable');
+      expect(cloudCheck?.detail).not.toContain(endpoint);
+      expect(cloudCheck?.detail).not.toContain('sanitized_findings');
       expect(requestedPath).toBe('/api/health');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
@@ -94,9 +93,9 @@ describe('cli doctor', () => {
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
       expect(result.stdout).toContain('ok workbench health');
-      expect(result.stdout).toContain('upload mode full_transcript_opt_in');
-      expect(result.stdout).toContain('redacted snippets off');
-      expect(result.stdout).toContain('secret redaction on');
+      expect(result.stdout).toContain('Privacy safeguards are configured.');
+      expect(result.stdout).not.toContain('full_transcript_opt_in');
+      expect(result.stdout).not.toContain('redacted snippets off');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
     }
@@ -174,9 +173,11 @@ describe('cli doctor', () => {
       expect(result.stdout).toContain('ok workbench API key');
       expect(result.stdout).toContain('ok attacker provider key');
       expect(result.stdout).toContain('ok judge readiness');
-      expect(result.stdout).toContain('Release gate key');
-      expect(result.stdout).toContain('sanitized_findings');
-      expect(result.stdout).toContain('can run and upload');
+      expect(result.stdout).toContain('Workbench credentials are ready.');
+      expect(result.stdout).toContain('Provider credentials are ready.');
+      expect(result.stdout).toContain('Judge configuration is ready.');
+      expect(result.stdout).not.toContain('Release gate key');
+      expect(result.stdout).not.toContain('sanitized_findings');
       expect(requestedPaths).toEqual(['/api/health', '/api/projects/proj_support/api-keys/verify']);
       expect(authHeaders[1]).toBe('Bearer rpsh_live_test');
     } finally {
@@ -243,7 +244,8 @@ describe('cli doctor', () => {
       expect(result.stderr).toBe('');
       expect(result.stdout).toContain('fail attacker provider key');
       expect(result.stdout).toContain('fail judge readiness');
-      expect(result.stdout).toContain('set ROLEPLAY_LLM_API_KEY');
+      expect(result.stdout).toContain('Provider credentials are required for real tests.');
+      expect(result.stdout).not.toContain('ROLEPLAY_LLM_API_KEY');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
     }
@@ -272,7 +274,9 @@ describe('cli doctor', () => {
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
       expect(result.stdout).toContain('fail workbench API key');
-      expect(result.stdout).toContain('ROLEPLAY_PROJECT_ID/--project and ROLEPLAY_API_KEY/--api-key');
+      expect(result.stdout).toContain('Project credentials are required for real tests.');
+      expect(result.stdout).not.toContain('ROLEPLAY_PROJECT_ID');
+      expect(result.stdout).not.toContain('ROLEPLAY_API_KEY');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
     }
@@ -297,7 +301,8 @@ describe('cli doctor', () => {
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe('');
       expect(result.stdout).toContain('fail workbench health');
-      expect(result.stdout).toContain('HTTP 503');
+      expect(result.stdout).toContain('Workbench could not be reached. Contact support if this continues.');
+      expect(result.stdout).not.toContain('HTTP 503');
       expect(result.stdout).not.toContain('â');
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));

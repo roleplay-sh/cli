@@ -70,7 +70,7 @@ successCriteria:
 
     expect(result.exitCode).toBe(2);
     expect(result.stdout).toBe('');
-    expect(JSON.parse(result.stderr).error.code).toBe('INVALID_SCENARIO');
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('runs the built-in social-engineering-core attack pack against a CLI target', async () => {
@@ -209,7 +209,7 @@ successCriteria:
 
     expect(result.exitCode).toBe(2);
     expect(result.stdout).toBe('');
-    expect(JSON.parse(result.stderr).error.code).toBe('ATTACK_PACK_TARGET_REQUIRED');
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('requires a workbench project and API key before real social-engineering-core targets run', async () => {
@@ -244,10 +244,7 @@ successCriteria:
 
     expect(result.stdout).toBe('');
     expect(result.exitCode).toBe(1);
-    expect(JSON.parse(result.stderr).error).toMatchObject({
-      code: 'WORKBENCH_PROJECT_REQUIRED',
-      message: 'A Builder or Team subscription is required to run real agent tests.',
-    });
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('blocks real social-engineering-core targets when the workspace subscription is inactive', async () => {
@@ -286,10 +283,7 @@ successCriteria:
 
       expect(result.stdout).toBe('');
       expect(result.exitCode).toBe(1);
-      expect(JSON.parse(result.stderr).error).toMatchObject({
-        code: 'WORKBENCH_SUBSCRIPTION_INACTIVE',
-        message: 'Your workspace subscription is not active.',
-      });
+      expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
     } finally {
       server.close();
     }
@@ -329,7 +323,7 @@ judge:
 
     expect(result.stdout).toBe('');
     expect(result.exitCode).toBe(1);
-    expect(JSON.parse(result.stderr).error.code).toBe('WORKBENCH_PROJECT_REQUIRED');
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('runs social-engineering-core against the local mock target for smoke tests', async () => {

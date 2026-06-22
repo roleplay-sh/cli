@@ -29,8 +29,8 @@ The publish workflow uses GitHub OIDC and intentionally does not require an npm 
 Create a GitHub release or push a version tag:
 
 ```bash
-git tag v0.1.11
-git push origin v0.1.11
+git tag v0.1.12
+git push origin v0.1.12
 ```
 
 The publish workflow runs checks and then publishes with:

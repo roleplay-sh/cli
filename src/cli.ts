@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
+import { AppError } from './core/errors.js';
+import { printError } from './utils/output.js';
 
 const helpText: Record<string, string> = {
   root: `${chalk.cyan('roleplay.sh')} - Included local runner for the roleplay.sh Workbench.
@@ -121,7 +123,13 @@ if ((command === 'help' && rest[0]) || (command && rest.some((arg) => arg === '-
 
 const commandLoader: CommandLoader | undefined = command ? commands[command] : loadHelpCommand;
 if (!commandLoader) {
-  process.stderr.write(`Unknown command: ${command}\nRun roleplay --help.\n`);
+  printError(
+    new AppError({
+      code: 'UNKNOWN_COMMAND',
+      message: 'Unknown command',
+      exitCode: 2,
+    }),
+  );
   process.exit(2);
 }
 

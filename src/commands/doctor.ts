@@ -96,20 +96,20 @@ async function checkCloudHealth(cloudUrl: string): Promise<DoctorCheck> {
       return {
         name: 'workbench health',
         ok: true,
-        detail: cloudHealthDetail(body, endpoint),
+        detail: cloudHealthDetail(body),
       };
     }
 
     return {
       name: 'workbench health',
       ok: false,
-      detail: `HTTP ${response.status} from ${endpoint}`,
+      detail: 'Workbench could not be reached. Contact support if this continues.',
     };
-  } catch (error) {
+  } catch {
     return {
       name: 'workbench health',
       ok: false,
-      detail: error instanceof Error ? error.message : `Could not reach ${endpoint}`,
+      detail: 'Workbench could not be reached. Contact support if this continues.',
     };
   }
 }
@@ -125,7 +125,7 @@ async function checkCloudCredentials(
     return {
       name: 'workbench API key',
       ok: false,
-      detail: 'ROLEPLAY_PROJECT_ID/--project and ROLEPLAY_API_KEY/--api-key are both required for credential verification',
+      detail: 'Project credentials are required for real tests.',
     };
   }
 
@@ -135,21 +135,18 @@ async function checkCloudCredentials(
       projectId: normalizedProjectId,
       apiKey: normalizedApiKey,
     });
-    const policy = verification.uploadPolicy;
     const entitlement = verification.entitlement;
     const access = entitlement.canRun && entitlement.canUpload;
     return {
       name: 'workbench API key',
       ok: access,
-      detail: access
-        ? `${verification.key.name} (${verification.key.preview}) can run and upload to ${verification.projectId} with ${policy.mode}, ${policy.retentionDays}d retention`
-        : `subscription ${entitlement.status}; open billing to start or resume Builder/Team access`,
+      detail: access ? 'Workbench credentials are ready.' : 'Workbench access is not active.',
     };
-  } catch (error) {
+  } catch {
     return {
       name: 'workbench API key',
       ok: false,
-      detail: error instanceof Error ? error.message : 'Could not verify workbench API key',
+      detail: 'Workbench credentials could not be verified. Contact support if this continues.',
     };
   }
 }
@@ -159,7 +156,7 @@ function checkProviderKey(name: string, provider: string | undefined): DoctorChe
     return {
       name,
       ok: false,
-      detail: 'choose a provider for real agent tests; mock is only for install smoke tests',
+      detail: 'A real test provider must be configured.',
     };
   }
 
@@ -168,9 +165,7 @@ function checkProviderKey(name: string, provider: string | undefined): DoctorChe
   return {
     name,
     ok,
-    detail: ok
-      ? `${envName} is configured for real adaptive runs`
-      : `set ${envName ?? 'ROLEPLAY_LLM_API_KEY'} before running real adaptive tests`,
+    detail: ok ? 'Provider credentials are ready.' : 'Provider credentials are required for real tests.',
   };
 }
 
@@ -179,7 +174,7 @@ function checkJudgeReadiness(mode: string | undefined, provider: string | undefi
     return {
       name: 'judge mode',
       ok: false,
-      detail: 'set ROLEPLAY_JUDGE_MODE=semantic or hybrid for real tests; use rules only for smoke/offline checks',
+      detail: 'A judge mode is required for real tests.',
     };
   }
 
@@ -187,7 +182,7 @@ function checkJudgeReadiness(mode: string | undefined, provider: string | undefi
     return {
       name: 'judge mode',
       ok: true,
-      detail: 'rules judge is available locally; add --allow-rules-only if using it for real targets',
+      detail: 'Local rules judging is available for smoke/offline checks.',
     };
   }
 
@@ -195,7 +190,7 @@ function checkJudgeReadiness(mode: string | undefined, provider: string | undefi
     return {
       name: 'judge mode',
       ok: false,
-      detail: 'use rules, semantic, or hybrid',
+      detail: 'The selected judge mode is not available.',
     };
   }
 
@@ -203,9 +198,7 @@ function checkJudgeReadiness(mode: string | undefined, provider: string | undefi
   return {
     name: 'judge readiness',
     ok: providerCheck.ok,
-    detail: providerCheck.ok
-      ? `${mode} judging is ready`
-      : `${mode} judging needs ${providerCheck.detail}`,
+    detail: providerCheck.ok ? 'Judge configuration is ready.' : 'Judge provider credentials are required.',
   };
 }
 
@@ -217,17 +210,11 @@ function providerKeyEnv(provider: string) {
   return undefined;
 }
 
-function cloudHealthDetail(body: CloudHealthResponse, endpoint: string): string {
+function cloudHealthDetail(body: CloudHealthResponse): string {
   const service = body.service ?? 'workbench';
   const privacy = body.privacy;
-  if (!privacy) return `${service} at ${endpoint}`;
-
-  const mode = privacy.defaultUploadMode ?? (privacy.fullTranscriptUpload ? 'full_transcript_opt_in' : 'sanitized_findings');
-  const safeguards = [
-    privacy.redactedSnippets === false ? 'redacted snippets off' : 'redacted snippets on',
-    privacy.secretRedaction === false ? 'secret redaction off' : 'secret redaction on',
-  ].join(', ');
-  return `${service} at ${endpoint} - upload mode ${mode}, ${safeguards}`;
+  if (!privacy) return `${service} is reachable.`;
+  return `${service} is reachable. Privacy safeguards are configured.`;
 }
 
 async function writable(path: string): Promise<boolean> {

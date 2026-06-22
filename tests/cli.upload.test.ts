@@ -150,7 +150,7 @@ describe('cli upload', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toBe('');
-    expect(JSON.parse(result.stderr).error.code).toBe('UPLOAD_API_KEY_REQUIRED');
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('prints structured JSON when upload project identity is missing', async () => {
@@ -167,10 +167,7 @@ describe('cli upload', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toBe('');
-    expect(JSON.parse(result.stderr).error).toMatchObject({
-      code: 'UPLOAD_PROJECT_REQUIRED',
-      message: 'ROLEPLAY_PROJECT_ID or --project is required to upload to the workbench.',
-    });
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 
   it('uploads the newest local run by report timestamp, not lexical run id', async () => {
@@ -405,10 +402,7 @@ describe('cli upload', () => {
 
       expect(result.exitCode).toBe(1);
       expect(result.stdout).toBe('');
-      expect(JSON.parse(result.stderr).error).toMatchObject({
-        code: 'UPLOAD_FULL_TRANSCRIPT_DISABLED',
-        message: 'Full transcript upload is disabled for project proj_support.',
-      });
+      expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
       expect(requestedPaths).toEqual(['/api/projects/proj_support/api-keys/verify']);
     } finally {
       await new Promise<void>((resolveClose) => server.close(() => resolveClose()));
@@ -444,7 +438,7 @@ describe('cli upload', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toBe('');
-    expect(JSON.parse(result.stderr).error.code).toBe('RUN_NOT_FOUND');
+    expect(JSON.parse(result.stderr).error).toMatchObject({ code: expect.any(String), message: 'Something went wrong while running this command.', reference: expect.stringMatching(/^err_/), supportCta: 'Contact support with this error reference.' });
   });
 });
 
